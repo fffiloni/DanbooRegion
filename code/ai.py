@@ -2,6 +2,7 @@ from model import *
 import numpy as np
 import keras.backend as K
 from keras.models import load_model
+import os
 
 
 def build_repeat_mulsep(x, m, i):
@@ -55,15 +56,23 @@ ipsp9 = tf.placeholder(dtype=tf.float32, shape=(None, None, 5, 1))
 ipsp3 = tf.placeholder(dtype=tf.float32, shape=(None, None, 1))
 tf_sparse_op_H = build_repeat_mulsep(ipsp3, ipsp9, 256)
 
-srcnn = load_model('srcnn.net')
+# Ensure the model path is correct
+model_path = os.path.join(os.environ['HOME'], 'app', 'srcnn.net')
+print("Loading model from:", model_path)
+
+# Load the model
+srcnn = load_model(model_path)
 pads = 7
 srcnn_op = srcnn(tf.pad(ip3 / 255.0, [[0, 0], [pads, pads], [pads, pads], [0, 0]], 'REFLECT'))[:, pads * 2:-pads * 2, pads * 2:-pads * 2, :][:, 1:-1, 1:-1, :] * 255.0
 
 session.run(tf.global_variables_initializer())
 
 print('begin load')
-vector.load_weights('DanbooRegion2020UNet.net')
-srcnn.load_weights('srcnn.net')
+# Ensure the model path is correct
+danboo_weights = os.path.join(os.environ['HOME'], 'app', 'DanbooRegion2020UNet.net')
+print("Loading weights from:", danboo_weights)
+vector.load_weights(danboo_weights)
+srcnn.load_weights(model_path)
 
 
 def go_vector(x):
