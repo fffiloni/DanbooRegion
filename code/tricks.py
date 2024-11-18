@@ -115,15 +115,23 @@ def find_all(labeled_array):
     hist_size = int(np.max(labeled_array))
     if hist_size == 0:
         return []
-    all_counts = [0 for _ in range(hist_size)]
+    
+    #all_counts = [0 for _ in range(hist_size)]
+    # Ensure all_counts is an integer array
+    all_counts = np.zeros(hist_size, dtype=np.int32)  # Use int32 for compatibility
     count_all(labeled_array, all_counts)
-    xs = [np.zeros(shape=(item, ), dtype=np.uint32) for item in all_counts]
-    ys = [np.zeros(shape=(item, ), dtype=np.uint32) for item in all_counts]
-    cs = [0 for item in all_counts]
+
+    # Use NumPy arrays instead of lists
+    xs = [np.zeros(shape=(item,), dtype=np.uint32) for item in all_counts]
+    ys = [np.zeros(shape=(item,), dtype=np.uint32) for item in all_counts]
+    cs = np.zeros(hist_size, dtype=np.int32)  # Use a NumPy array for counts
+
     trace_all(labeled_array, xs, ys, cs)
+
     filled_area = []
     for _ in range(hist_size):
         filled_area.append((xs[_], ys[_]))
+
     return filled_area
 
 
